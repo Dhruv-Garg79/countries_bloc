@@ -1,6 +1,6 @@
 part of 'country_bloc.dart';
 
-enum CountryStatus { initial, success, failure }
+enum CountryStatus { initial, success, failure, loading }
 
 class CountryState extends Equatable {
   const CountryState({

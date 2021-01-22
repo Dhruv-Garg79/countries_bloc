@@ -40,7 +40,7 @@ class _CountryListScreenState extends State<CountryListScreen> {
         child: BlocBuilder<CountryBloc, CountryState>(
           builder: (context, state) {
             AppLogger.print(state.countries.length.toString());
-            if (state.status == CountryStatus.initial) return Loader();
+            if (state.countries.length == 0) return Loader();
             if (state.status == CountryStatus.failure)
               return MyErrorWidget(
                 onRetry: () {
@@ -58,7 +58,7 @@ class _CountryListScreenState extends State<CountryListScreen> {
                       )
                     : CountryWidget(country: state.countries[index]);
               },
-              itemCount: state.hasReachedMax
+              itemCount: state.status != CountryStatus.loading
                   ? state.countries.length
                   : state.countries.length + 1,
             );
@@ -104,7 +104,8 @@ class _CountryListScreenState extends State<CountryListScreen> {
     //to fetch more data when user reach end of list
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
-    if (maxScroll - currentScroll <= _scrollThreshold) {
+    if (maxScroll - currentScroll <= _scrollThreshold &&
+        _countryBloc.state.status != CountryStatus.loading) {
       _countryBloc.add(FetchCountry());
     }
   }

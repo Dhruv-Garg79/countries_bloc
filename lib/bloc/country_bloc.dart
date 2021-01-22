@@ -20,6 +20,7 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
     CountryEvent event,
   ) async* {
     if (event is FetchCountry && !state.hasReachedMax) {
+      yield state.copyWith(status: CountryStatus.loading);
       final response = await _repo.fetchCountries(offset);
 
       if (response.error.isEmpty) {
