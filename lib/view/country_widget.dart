@@ -1,3 +1,4 @@
+import 'package:countries_bloc/bloc/country_bloc.dart';
 import 'package:countries_bloc/bloc/favorite_bloc.dart';
 import 'package:countries_bloc/models/CountryModal.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,15 @@ class CountryWidget extends StatefulWidget {
 
 class _CountryWidgetState extends State<CountryWidget> {
   bool _isFavorite = false;
+  FavoriteBloc _favoriteBloc;
+  CountryBloc _countryBloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _favoriteBloc = BlocProvider.of<FavoriteBloc>(context);
+    _countryBloc = BlocProvider.of<CountryBloc>(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,18 +60,18 @@ class _CountryWidgetState extends State<CountryWidget> {
           IconButton(
             icon: Icon(
               Icons.favorite,
-              color: _isFavorite ? Colors.red : Colors.white,
+              color: country.isFavorite ? Colors.red : Colors.white,
             ),
             onPressed: () {
               setState(() {
                 _isFavorite = !_isFavorite;
               });
               if (_isFavorite) {
-                BlocProvider.of<FavoriteBloc>(context, listen: false)
-                    .add(AddFavoriteEvent(country));
+                _favoriteBloc.add(AddFavoriteEvent(country));
+                _countryBloc.add(FavoriteCountryEvent(country.countryCode));
               } else {
-                BlocProvider.of<FavoriteBloc>(context, listen: false)
-                    .add(RemoveFavoriteEvent(country.countryCode));
+                _favoriteBloc.add(RemoveFavoriteEvent(country.countryCode));
+                _countryBloc.add(UnfavoriteCountryEvent(country.countryCode));
               }
             },
           ),

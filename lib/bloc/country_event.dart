@@ -8,3 +8,21 @@ abstract class CountryEvent extends Equatable {
 }
 
 class FetchCountry extends CountryEvent {}
+
+class FavoriteCountryEvent extends CountryEvent{
+  final String countryCode;
+
+  const FavoriteCountryEvent(this.countryCode);
+
+  @override
+  List<Object> get props => [countryCode];
+}
+
+class UnfavoriteCountryEvent extends CountryEvent{
+  final String countryCode;
+
+  const UnfavoriteCountryEvent(this.countryCode);
+
+  @override
+  List<Object> get props => [countryCode];
+}

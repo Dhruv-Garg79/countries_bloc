@@ -44,5 +44,21 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
         );
       }
     }
+
+    if (event is FavoriteCountryEvent) {
+      final i = state.countries
+          .indexWhere((element) => element.countryCode == event.countryCode);
+      state.countries[i].isFavorite = true;
+
+      state.copyWith(countries: state.countries);
+    }
+
+    if (event is UnfavoriteCountryEvent) {
+      final i = state.countries
+          .indexWhere((element) => element.countryCode == event.countryCode);
+      state.countries[i].isFavorite = false;
+
+      state.copyWith(countries: state.countries);
+    }
   }
 }

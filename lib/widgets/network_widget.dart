@@ -33,10 +33,14 @@ class _NetworkWidgetState extends State<NetworkWidget> {
     return _isOnline
         ? widget.child
         : Center(
-            child: Text(
-              "Please check your network connectivity",
-              style: TextStyle(
-                fontSize: 16,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "Please check your network connectivity",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           );

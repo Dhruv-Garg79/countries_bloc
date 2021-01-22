@@ -18,8 +18,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
       yield state.copyWith(
         countries: state.status == FavoriteStatus.initial
             ? [event.country]
-            : state.countries
-          ..add(event.country),
+            : (state.countries
+          ..add(event.country)),
         status: FavoriteStatus.loaded,
       );
     }
