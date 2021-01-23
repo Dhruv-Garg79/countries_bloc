@@ -16,18 +16,28 @@ class CountryListScreen extends StatefulWidget {
   _CountryListScreenState createState() => _CountryListScreenState();
 }
 
-class _CountryListScreenState extends State<CountryListScreen> {
+class _CountryListScreenState extends State<CountryListScreen>
+    with TickerProviderStateMixin {
   final _scrollController = ScrollController();
   final _scrollThreshold = 400.0;
+
+  AnimationController _animationController;
+  Animation<double> _animation;
   CountryBloc _countryBloc;
   bool _showFBA = true;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
     _countryBloc = BlocProvider.of<CountryBloc>(context);
     _countryBloc.add(FetchCountry());
+
+    _scrollController.addListener(_onScroll);
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _animation = Tween(begin: 1.0, end: 0.0).animate(_animationController);
   }
 
   @override
@@ -65,17 +75,18 @@ class _CountryListScreenState extends State<CountryListScreen> {
           },
         ),
       ),
-      floatingActionButton: _showFBA
-          ? FloatingActionButton(
-              child: Icon(
-                Icons.favorite_border_outlined,
-                color: Colors.pinkAccent,
-              ),
-              onPressed: () {
-                ExtendedNavigator.root.push(Routes.favoriteListScreen);
-              },
-            )
-          : null,
+      floatingActionButton: ScaleTransition(
+        scale: _animation,
+        child: FloatingActionButton(
+          child: Icon(
+            Icons.favorite_border_outlined,
+            color: Colors.pinkAccent,
+          ),
+          onPressed: () {
+            ExtendedNavigator.root.push(Routes.favoriteListScreen);
+          },
+        ),
+      ),
     );
   }
 
@@ -87,18 +98,15 @@ class _CountryListScreenState extends State<CountryListScreen> {
 
   void _onScroll() {
     // to hide FBA when user scrolling down
-    if (_scrollController.position.userScrollDirection ==
-            ScrollDirection.reverse &&
-        _showFBA) {
-      setState(() {
+    final scrollDir = _scrollController.position.userScrollDirection;
+    if (!_animationController.isAnimating) {
+      if (scrollDir == ScrollDirection.reverse && _showFBA) {
         _showFBA = false;
-      });
-    } else if (_scrollController.position.userScrollDirection ==
-            ScrollDirection.forward &&
-        !_showFBA) {
-      setState(() {
+        _animationController.forward(from: 0);
+      } else if (scrollDir == ScrollDirection.forward && !_showFBA) {
         _showFBA = true;
-      });
+        _animationController.reverse(from: 1);
+      }
     }
 
     //to fetch more data when user reach end of list
